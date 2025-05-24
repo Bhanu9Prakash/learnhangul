@@ -1,16 +1,1643 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangul Quest: The Alphabet Adventure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-color: #5E72E4;
+      /* Vibrant Blue/Purple */
+      --primary-color-light: #8292f4;
+      --secondary-color: #f4f5f7;
+      /* Light background for cards */
+      --accent-color: #11CDEF;
+      /* Light Blue accent */
+      --text-color: #525f7f;
+      /* Dark grey for text */
+      --text-color-light: #8898aa;
+      --white-color: #ffffff;
+      --success-color: #2dce89;
+      --danger-color: #f5365c;
+      --warning-color: #fb6340;
+      --yellow-star: #FFD700;
+      /* From screenshot */
+      --border-radius-sm: 8px;
+      --border-radius-md: 12px;
+      --border-radius-lg: 20px;
+      --shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
+    }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #F0F2F5;
+      /* Light grey background like many modern apps */
+      min-height: 100vh;
+      color: var(--text-color);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      /* Slightly narrower for a more focused app feel */
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* App Header (New) */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+      color: var(--white-color);
+      border-radius: var(--border-radius-lg);
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .app-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .player-stats-header {
+      display: flex;
+      gap: 20px;
+      text-align: right;
+    }
+
+    .player-stats-header .stat-item {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 15px;
+      border-radius: var(--border-radius-md);
+    }
+
+    .player-stats-header .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.8;
+      display: block;
+    }
+
+    .player-stats-header .stat-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    #xp-bar-container-header {
+      height: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    #xp-bar-header {
+      height: 100%;
+      width: 0%;
+      background: var(--yellow-star);
+      border-radius: 3px;
+      transition: width 0.5s ease-out;
+    }
+
+
+    /* Overall Mastery Progress */
+    .mastery-progress-container {
+      background: var(--white-color);
+      border-radius: var(--border-radius-md);
+      padding: 15px 20px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+    }
+
+    .mastery-progress-container .progress-text-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .progress-bar-wrapper {
+      height: 10px;
+      background: #e9ecef;
+      /* Light grey track */
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      /* Was #progress-bar */
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-color) 0%, var(--primary-color) 100%);
+      border-radius: 5px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .progress-text {
+      /* Was #progress-text */
+      color: var(--text-color-light);
+      font-size: 0.8rem;
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    /* Mode Toggle - Styled as Tabs */
+    .mode-toggle {
+      display: flex;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 12px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-color-light);
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      text-align: center;
+      position: relative;
+      top: 1px;
+      /* Align with border */
+    }
+
+    .mode-btn:hover {
+      color: var(--primary-color);
+    }
+
+    .mode-btn.active {
+      color: var(--primary-color);
+      font-weight: 600;
+      border-bottom-color: var(--primary-color);
+    }
+
+    .mode-btn .icon {
+      /* For adding icons later */
+      margin-right: 6px;
+    }
+
+
+    /* Main Content Card */
+    .content-card {
+      background: var(--white-color);
+      border-radius: var(--border-radius-lg);
+      padding: 25px 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    /* Remove ::before from content-card if not needed for new design */
+    .content-card::before {
+      display: none;
+    }
+
+    /* Character Display */
+    .character-display {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .hangul-character {
+      font-size: clamp(5rem, 15vw, 9rem);
+      /* Even bigger */
+      font-weight: 700;
+      /* Bolder */
+      color: var(--primary-color);
+      margin-bottom: 25px;
+      line-height: 1;
+      transition: transform 0.3s ease-out, color 0.3s ease;
+      position: relative;
+      /* For mastery star */
+    }
+
+    .hangul-character.mastered::after {
+      content: '⭐';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      font-size: 2rem;
+      animation: starPop 0.5s ease-out;
+    }
+
+    @keyframes starPop {
+      0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.3) rotate(15deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+
+    /* Character Info Cards */
+    .character-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .info-card {
+      background: var(--secondary-color);
+      border-radius: var(--border-radius-md);
+      padding: 20px;
+      text-align: left;
+      /* Changed to left for icon placement */
+      border: 1px solid #e9ecef;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--text-color-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 500;
+      display: block;
+      /* Makes it take full width */
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 500;
+      /* Slightly less bold for cleaner look */
+      color: var(--text-color);
+    }
+
+    .info-value.mnemonic {
+      font-size: 1.2rem;
+      /* Keep mnemonic prominent */
+      color: var(--warning-color);
+      /* Different color for mnemonic */
+      font-weight: 600;
+    }
+
+    .notes {
+      background: #fff3cd;
+      /* Keep yellow for notes, but tone down */
+      border: 1px solid #ffeeba;
+      border-left: 4px solid #ffc107;
+      border-radius: var(--border-radius-sm);
+      padding: 15px;
+      margin-top: 20px;
+      font-style: normal;
+      /* Less italic */
+      color: #856404;
+      font-size: 0.9rem;
+    }
+
+    /* Navigation & Action Buttons */
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn,
+    .action-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: var(--border-radius-lg);
+      /* More rounded */
+      background: var(--primary-color);
+      color: var(--white-color);
+      font-weight: 500;
+      /* Poppins 500 is good */
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .nav-btn:hover,
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
+      background: var(--primary-color-light);
+    }
+
+    .nav-btn:disabled,
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: #adb5bd;
+      /* Grey for disabled */
+      box-shadow: none;
+      transform: none;
+    }
+
+    .action-btn.mastered-btn {
+      background: var(--success-color);
+    }
+
+    .action-btn.mastered-btn:hover {
+      background: #28a745;
+      /* Darker green on hover */
+    }
+
+    /* Previous button styling */
+    #prev-btn {
+      background-color: var(--white-color);
+      color: var(--primary-color);
+      border: 1px solid #dee2e6;
+    }
+
+    #prev-btn:hover {
+      background-color: var(--secondary-color);
+    }
+
+
+    /* Category Filter */
+    .category-filter {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 30px 0 10px 0;
+      /* Added margin top */
+    }
+
+    .category-btn {
+      padding: 8px 18px;
+      border: 1px solid #ced4da;
+      /* Lighter border */
+      border-radius: var(--border-radius-lg);
+      /* Very rounded */
+      background: var(--white-color);
+      color: var(--text-color-light);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .category-btn:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .category-btn.active {
+      background: var(--primary-color);
+      color: var(--white-color);
+      border-color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .category-btn.locked {
+      border-color: #e0e0e0;
+      color: #adb5bd;
+      cursor: not-allowed;
+      background: #f8f9fa;
+    }
+
+    .category-btn.locked::after {
+      content: ' 🔒';
+      font-size: 0.7em;
+    }
+
+
+    /* Quiz Section */
+    .quiz-container {
+      text-align: center;
+    }
+
+    .quiz-question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      /* Wider options */
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .quiz-option {
+      padding: 15px 20px;
+      border: 1px solid #dee2e6;
+      border-radius: var(--border-radius-md);
+      background: var(--white-color);
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      font-weight: 500;
+      text-align: center;
+      color: var(--text-color);
+    }
+
+    .quiz-option:hover {
+      border-color: var(--primary-color);
+      background: #f4f6ff;
+      /* Light blue hover */
+      color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .quiz-option.correct {
+      border-color: var(--success-color);
+      background: #e6fffa;
+      color: var(--success-color);
+      font-weight: 600;
+    }
+
+    .quiz-option.incorrect {
+      border-color: var(--danger-color);
+      background: #ffeeee;
+      color: var(--danger-color);
+      font-weight: 600;
+    }
+
+    .quiz-option.disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .quiz-feedback {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: var(--border-radius-md);
+      font-weight: 500;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quiz-feedback.correct {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .quiz-feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Score Display in Quiz */
+    .score-display {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .score-item {
+      text-align: center;
+      background: var(--secondary-color);
+      padding: 12px 20px;
+      border-radius: var(--border-radius-md);
+      min-width: 100px;
+      /* Ensure they have some width */
+      border: 1px solid #e9ecef;
+    }
+
+    .score-number {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .score-label {
+      font-size: 0.8rem;
+      color: var(--text-color-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section Title (Example Words, Achievements) */
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--text-color);
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .section-title::after {
+      /* Optional subtle underline */
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: var(--primary-color);
+      border-radius: 2px;
+      opacity: 0.5;
+    }
+
+
+    /* Example Words */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .example-card {
+      background: var(--white-color);
+      border-radius: var(--border-radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .example-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .example-hangul {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+    }
+
+    .example-romanization {
+      font-style: italic;
+      color: var(--text-color-light);
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .example-english {
+      color: var(--text-color);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .example-breakdown {
+      font-size: 0.8rem;
+      color: #6c757d;
+      background: var(--secondary-color);
+      padding: 8px;
+      border-radius: var(--border-radius-sm);
+    }
+
+    /* Favorite Button */
+    .favorite-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      /* Bigger heart */
+      cursor: pointer;
+      color: #ced4da;
+      /* Light grey inactive */
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .favorite-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .favorite-btn.active {
+      color: var(--danger-color);
+    }
+
+    /* Red active */
+    @keyframes heartBeat {
+
+      /* Same as before, good */
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.3);
+      }
+    }
+
+    /* Achievements Section */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      /* Wider items */
+      gap: 20px;
+    }
+
+    .achievement-item {
+      background: var(--white-color);
+      border: 1px solid #e9ecef;
+      border-radius: var(--border-radius-md);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .achievement-item.earned {
+      border-left: 5px solid var(--success-color);
+      background-color: #f6fff9;
+      /* Very light green */
+    }
+
+    .achievement-item .icon {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .achievement-item.earned .icon {
+      color: var(--success-color);
+    }
+
+    .achievement-item strong {
+      font-size: 1rem;
+      color: var(--text-color);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .achievement-item div:not(.icon) {
+      font-size: 0.85rem;
+      color: var(--text-color-light);
+    }
+
+    .achievement-item .unlocked-status {
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .achievement-item.earned .unlocked-status {
+      color: var(--success-color);
+    }
+
+    .achievement-item:not(.earned) .unlocked-status {
+      color: var(--text-color-light);
+    }
+
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      /* Start off-screen */
+      background-color: var(--primary-color);
+      color: var(--white-color);
+      padding: 15px 25px;
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-lg);
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-notification.achievement {
+      background-color: var(--yellow-star);
+      color: #5d4037;
+      /* Darker text for yellow */
+    }
+
+    .toast-notification.xp {
+      /* Specific style for XP toast if needed */
+      background-color: var(--accent-color);
+      color: var(--white-color);
+    }
+
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .app-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 15px;
+      }
+
+      .player-stats-header {
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .player-stats-header .stat-item {
+        padding: 6px 10px;
+      }
+
+      .content-card {
+        padding: 20px;
+      }
+
+      .character-info {
+        grid-template-columns: 1fr;
+      }
+
+      .navigation {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .nav-buttons {
+        width: 100%;
+      }
+
+      .nav-buttons .nav-btn,
+      .action-btn {
+        flex-grow: 1;
+      }
+
+      /* Make buttons in nav-buttons group take equal space */
+      .action-btn:not(.nav-buttons .action-btn) {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      /* Full width for standalone action button */
+
+      .mode-btn {
+        font-size: 0.9rem;
+        padding: 10px 5px;
+      }
+
+      .hangul-character {
+        font-size: clamp(4rem, 13vw, 7rem);
+      }
+
+      .quiz-options {
+        grid-template-columns: 1fr;
+      }
+
+      .score-display {
+        gap: 10px;
+      }
+
+      .achievements-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .app-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .player-stats-header .stat-label {
+        font-size: 0.7rem;
+      }
+
+      .player-stats-header .stat-value {
+        font-size: 1rem;
+      }
+
+      .info-card {
+        padding: 15px;
+      }
+
+      .nav-btn,
+      .action-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
-  Hello world
-  <script src="script.js"></script>
+  <div class="container">
+    <!-- App Header - NEW STRUCTURE -->
+    <div class="app-header">
+      <h1>Hangul Quest</h1>
+      <div class="player-stats-header">
+        <div class="stat-item">
+          <span class="stat-label">Level</span>
+          <span class="stat-value" id="player-level">1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">XP</span>
+          <span class="stat-value" id="player-xp">0 / 100</span>
+          <div id="xp-bar-container-header">
+            <div id="xp-bar-header"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Mastery Progress - MOVED AND RESTYLED -->
+    <div class="mastery-progress-container">
+      <span class="progress-text-label">Overall Character Mastery</span>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar" id="mastery-progress-bar"></div> <!-- Changed ID -->
+      </div>
+      <div class="progress-text" id="mastery-progress-text">0 / 0 characters mastered</div> <!-- Changed ID -->
+    </div>
+
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="learn-mode-btn"><span class="icon">📚</span>Learn</button>
+      <button class="mode-btn" id="quiz-mode-btn"><span class="icon">🧠</span>Quiz</button>
+      <button class="mode-btn" id="achievements-mode-btn"><span class="icon">🏆</span>Achievements</button>
+    </div>
+
+    <!-- Learn Section -->
+    <div id="learn-section" class="content-card">
+      <button class="favorite-btn" id="favorite-btn">♡</button>
+      <!-- Keep using FontAwesome or similar for real heart icon if preferred -->
+
+      <div class="character-display">
+        <div class="hangul-character" id="hangul-char">?</div>
+      </div>
+
+      <div class="character-info">
+        <div class="info-card">
+          <div class="info-label">💡 Mnemonic</div>
+          <div class="info-value mnemonic" id="mnemonic-text">Loading...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">🔊 Sound</div>
+          <div class="info-value" id="sound-text">Loading...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">🏷️ Type</div>
+          <div class="info-value" id="type-text">Loading...</div>
+        </div>
+      </div>
+
+      <div class="notes hidden" id="notes-text"></div>
+
+
+      <div class="navigation">
+        <div class="nav-buttons">
+          <button class="nav-btn" id="prev-btn">← Previous</button>
+          <button class="nav-btn" id="next-btn">Next →</button>
+        </div>
+        <button class="action-btn" id="master-btn">✨ Master This!</button>
+      </div>
+
+      <div class="category-filter">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quiz-section" class="content-card hidden">
+      <div class="quiz-container">
+        <div class="score-display">
+          <div class="score-item">
+            <div class="score-number" id="score-display">0</div>
+            <div class="score-label">Score</div>
+          </div>
+          <div class="score-item">
+            <div class="score-number" id="streak-display">0</div>
+            <div class="score-label">Streak</div>
+          </div>
+          <div class="score-item">
+            <div class="score-number" id="accuracy-display">0%</div>
+            <div class="score-label">Accuracy</div>
+          </div>
+        </div>
+
+        <div class="quiz-question">What sound does this character make?</div>
+        <div class="hangul-character" id="quiz-hangul-char">?</div>
+
+        <div class="quiz-options" id="quiz-options-container"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="nav-btn hidden" id="next-question-btn"
+          style="margin-top: 20px; width: 100%; max-width: 250px; display: block; margin-left:auto; margin-right:auto;">Next
+          Question →</button>
+      </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div id="achievements-section-display" class="content-card hidden">
+      <h2 class="section-title">Your Achievements</h2>
+      <div class="achievements-grid" id="achievements-grid-container"></div>
+    </div>
+
+    <!-- Example Words Section -->
+    <div id="example-words-section" class="content-card hidden"> <!-- Initially hidden, shown with learn mode -->
+      <h2 class="section-title">Example Words</h2>
+      <div class="examples-grid" id="example-words-container"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast-notification"></div>
+
+  <script>
+    // Data storage (HangulData, exampleWords, XP_PER_LEVEL, CATEGORY_UNLOCKS, ACHIEVEMENTS)
+    // ... (Keep your existing data structures)
+    const hangulData = [
+      {"id": "b", "hangul": "ㅂ", "mnemonic": "Bucket", "sound": "B/P", "type": "Consonant", "soundKey": "b", "xp": 10},
+      {"id": "n", "hangul": "ㄴ", "mnemonic": "Nose", "sound": "N", "type": "Consonant", "soundKey": "n", "xp": 10},
+      {"id": "g", "hangul": "ㄱ", "mnemonic": "Gun", "sound": "G/K", "type": "Consonant", "soundKey": "g", "xp": 10},
+      {"id": "m", "hangul": "ㅁ", "mnemonic": "Mouth", "sound": "M", "type": "Consonant", "soundKey": "m", "xp": 10},
+      {"id": "ng", "hangul": "ㅇ", "mnemonic": "Nothing / Placeholder", "sound": "Silent (start), ng (end)", "type": "Consonant", "notes": "Silent at the start of a syllable, 'ng' sound at the end.", "soundKey": "ng", "xp": 10},
+      {"id": "s", "hangul": "ㅅ", "mnemonic": "Ski Mountain", "sound": "S/Sh", "type": "Consonant", "soundKey": "s", "xp": 10},
+      {"id": "j", "hangul": "ㅈ", "mnemonic": "Joy (Ski atop mountain)", "sound": "J", "type": "Consonant", "soundKey": "j", "xp": 10},
+      {"id": "ch", "hangul": "ㅊ", "mnemonic": "Champion (Ski with hands raised)", "sound": "CH", "type": "Consonant", "soundKey": "ch", "xp": 15},
+      {"id": "rl", "hangul": "ㄹ", "mnemonic": "Rattlesnake", "sound": "R/L", "type": "Consonant", "notes": "Often 'R' at start of syllable, 'L' at end or between vowels.", "soundKey": "r/l", "xp": 10},
+      {"id": "d", "hangul": "ㄷ", "mnemonic": "Door", "sound": "D/T", "type": "Consonant", "soundKey": "d", "xp": 10},
+      {"id": "p", "hangul": "ㅍ", "mnemonic": "Part II (Roman numeral II)", "sound": "P", "type": "Consonant", "soundKey": "p", "xp": 15},
+      {"id": "h", "hangul": "ㅎ", "mnemonic": "Hole (like a golf hole)", "sound": "H", "type": "Consonant", "soundKey": "h", "xp": 10},
+      {"id": "k", "hangul": "ㅋ", "mnemonic": "Key (K with extra stroke)", "sound": "K (aspirated)", "type": "Consonant", "notes": "Aspirated K sound.", "soundKey": "k", "xp": 15},
+      {"id": "t_asp", "hangul": "ㅌ", "mnemonic": "Teeth (D with extra stroke)", "sound": "T (aspirated)", "type": "Consonant", "notes": "Aspirated T sound.", "soundKey": "t", "xp": 15},
+      {"id": "pp", "hangul": "ㅃ", "mnemonic": "Double Bucket", "sound": "PP (tense P)", "type": "Tense Consonant", "notes": "Tense, unaspirated P sound.", "soundKey": "pp", "xp": 20},
+      {"id": "jj", "hangul": "ㅉ", "mnemonic": "Double Joy", "sound": "JJ (tense J)", "type": "Tense Consonant", "notes": "Tense, unaspirated J sound.", "soundKey": "jj", "xp": 20},
+      {"id": "tt", "hangul": "ㄸ", "mnemonic": "Double Door", "sound": "TT (tense T)", "type": "Tense Consonant", "notes": "Tense, unaspirated T sound.", "soundKey": "tt", "xp": 20},
+      {"id": "kk", "hangul": "ㄲ", "mnemonic": "Double Gun", "sound": "KK (tense K)", "type": "Tense Consonant", "notes": "Tense, unaspirated K sound.", "soundKey": "kk", "xp": 20},
+      {"id": "ss", "hangul": "ㅆ", "mnemonic": "Double Ski Mountain", "sound": "SS (tense S)", "type": "Tense Consonant", "notes": "Tense S sound.", "soundKey": "ss", "xp": 20},
+      {"id": "i", "hangul": "ㅣ", "mnemonic": "Tree", "sound": "ee (tree)", "type": "Vowel", "soundKey": "i", "xp": 10},
+      {"id": "a", "hangul": "ㅏ", "mnemonic": "After (line AFTER tree)", "sound": "ah (father)", "type": "Vowel", "soundKey": "a", "xp": 10},
+      {"id": "eo", "hangul": "ㅓ", "mnemonic": "Before (line BEFORE tree)", "sound": "eo (uh/aw)", "type": "Vowel", "soundKey": "eo", "xp": 10},
+      {"id": "eu", "hangul": "ㅡ", "mnemonic": "Brook", "sound": "eu (brook/put)", "type": "Vowel", "soundKey": "eu", "xp": 10},
+      {"id": "o", "hangul": "ㅗ", "mnemonic": "Over (line OVER brook)", "sound": "o (go)", "type": "Vowel", "soundKey": "o", "xp": 10},
+      {"id": "u", "hangul": "ㅜ", "mnemonic": "Under (line UNDER brook)", "sound": "oo (moon)", "type": "Vowel", "soundKey": "u", "xp": 10},
+      {"id": "ya", "hangul": "ㅑ", "mnemonic": "Y + ah (extra line on ㅏ)", "sound": "yah", "type": "Y-Vowel", "soundKey": "ya", "xp": 15},
+      {"id": "yeo", "hangul": "ㅕ", "mnemonic": "Y + eo (extra line on ㅓ)", "sound": "yeo", "type": "Y-Vowel", "soundKey": "yeo", "xp": 15},
+      {"id": "yo", "hangul": "ㅛ", "mnemonic": "Y + o (extra line on ㅗ)", "sound": "yo", "type": "Y-Vowel", "soundKey": "yo", "xp": 15},
+      {"id": "yu", "hangul": "ㅠ", "mnemonic": "Y + oo (extra line on ㅜ)", "sound": "yoo", "type": "Y-Vowel", "soundKey": "yu", "xp": 15},
+      {"id": "ae", "hangul": "ㅐ", "mnemonic": "Two Trees + After line", "sound": "ae (play/apple)", "type": "Diphthong", "soundKey": "ae", "xp": 20},
+      {"id": "e", "hangul": "ㅔ", "mnemonic": "After line + Two Trees", "sound": "e (play/bet)", "type": "Diphthong", "notes": "ㅐ and ㅔ sound very similar in modern Korean.", "soundKey": "e", "xp": 20},
+      {"id": "yae", "hangul": "ㅒ", "mnemonic": "Y + ae (extra line on ㅐ)", "sound": "yae", "type": "Diphthong", "soundKey": "yae", "xp": 25},
+      {"id": "ye", "hangul": "ㅖ", "mnemonic": "Y + e (extra line on ㅔ)", "sound": "ye", "type": "Diphthong", "soundKey": "ye", "xp": 25},
+      {"id": "wa", "hangul": "ㅘ", "mnemonic": "Over + After (ㅗ + ㅏ)", "sound": "wa (water)", "type": "Diphthong", "soundKey": "wa", "xp": 25},
+      {"id": "wae", "hangul": "ㅙ", "mnemonic": "Over + Ae (ㅗ + ㅐ)", "sound": "wae (wedding)", "type": "Diphthong", "soundKey": "wae", "xp": 25},
+      {"id": "oe", "hangul": "ㅚ", "mnemonic": "Over + Tree (ㅗ + ㅣ)", "sound": "oe (way)", "type": "Diphthong", "soundKey": "oe", "xp": 25},
+      {"id": "wo", "hangul": "ㅝ", "mnemonic": "Under + Before (ㅜ + ㅓ)", "sound": "wo (wonder)", "type": "Diphthong", "soundKey": "wo", "xp": 25},
+      {"id": "we", "hangul": "ㅞ", "mnemonic": "Under + E (ㅜ + ㅔ)", "sound": "we (web)", "type": "Diphthong", "soundKey": "we", "xp": 25},
+      {"id": "wi", "hangul": "ㅟ", "mnemonic": "Under + Tree (ㅜ + ㅣ)", "sound": "wi (we)", "type": "Diphthong", "soundKey": "wi", "xp": 25},
+      {"id": "ui", "hangul": "ㅢ", "mnemonic": "Brook + Tree (ㅡ + ㅣ)", "sound": "ui (u-i)", "type": "Diphthong", "soundKey": "ui", "xp": 25}
+    ];
+    const exampleWords = [
+      {"hangul": "바나나", "romanization": "banana", "english": "Banana", "breakdown": "ㅂ(b) + ㅏ(a) + ㄴ(n) + ㅏ(a) + ㄴ(n) + ㅏ(a)"},
+      {"hangul": "삼성", "romanization": "samseong", "english": "Samsung", "breakdown": "ㅅ(s) + ㅏ(a) + ㅁ(m) + ㅅ(s) + ㅓ(eo) + ㅇ(ng)"},
+      {"hangul": "김정은", "romanization": "gimjeong-eun", "english": "Kim Jong Un", "breakdown": "ㄱ(g)+ㅣ(i)+ㅁ(m) / ㅈ(j)+ㅓ(eo)+ㅇ(ng) / ㅇ(silent)+ㅡ(eu)+ㄴ(n)"},
+      {"hangul": "일", "romanization": "il", "english": "One / Day / Work", "breakdown": "ㅇ(silent) + ㅣ(i) + ㄹ(l)"},
+      {"hangul": "강남", "romanization": "gangnam", "english": "Gangnam (district)", "breakdown": "ㄱ(g) + ㅏ(a) + ㅇ(ng) / ㄴ(n) + ㅏ(a) + ㅁ(m)"},
+      {"hangul": "안녕하세요", "romanization": "annyeonghaseyo", "english": "Hello (formal)", "breakdown": "Common greeting"},
+      {"hangul": "사랑해", "romanization": "saranghae", "english": "I love you (informal)", "breakdown": "ㅅ(s)+ㅏ(a)+ㄹ(r)+ㅏ(a)+ㅇ(ng) / ㅎ(h)+ㅐ(ae)"},
+      {"hangul": "학교", "romanization": "hakgyo", "english": "School", "breakdown": "ㅎ(h)+ㅏ(a)+ㄱ(k) / ㄱ(g)+ㅛ(yo)"},
+      {"hangul": "물", "romanization": "mul", "english": "Water", "breakdown": "ㅁ(m)+ㅜ(u)+ㄹ(l)"},
+      {"hangul": "친구", "romanization": "chingu", "english": "Friend", "breakdown": "ㅊ(ch)+ㅣ(i)+ㄴ(n) / ㄱ(g)+ㅜ(u)"}
+    ];
+    const XP_PER_LEVEL = [100, 150, 200, 250, 300, 400, 500, 600, 700, 800];
+    const CATEGORY_UNLOCKS = {1: ['all', 'consonant'], 2: ['vowel'], 3: ['y-vowel'], 4: ['diphthong'], 5: ['tense consonant']};
+    const ACHIEVEMENTS = [
+      {id: 'first_steps', name: 'First Steps', icon: '👟', description: 'Master your first Hangul character.', condition: (state) => state.masteredCharacters.size >= 1},
+      {id: 'consonant_cadet', name: 'Consonant Cadet', icon: '🅱️', description: 'Master 5 consonants.', condition: (state) => Array.from(state.masteredCharacters).filter(id => hangulData.find(c => c.id === id)?.type === 'Consonant').length >= 5},
+      {id: 'vowel_voyager', name: 'Vowel Voyager', icon: '🎤', description: 'Master all basic vowels.', condition: (state) => ['i', 'a', 'eo', 'eu', 'o', 'u'].every(id => state.masteredCharacters.has(id))},
+      {id: 'quiz_whiz_10', name: 'Quiz Whiz', icon: '💡', description: 'Get 10 correct quiz answers.', condition: (state) => state.quizScore >= 10}, // This condition refers to current session score, might need adjustment for total
+      {id: 'streak_starter_5', name: 'Streak Starter', icon: '🔥', description: 'Achieve a 5-quiz streak.', condition: (state) => state.quizStreak >= 5},
+      {id: 'level_5', name: 'Level 5 Reached!', icon: '🌟', description: 'Reach player level 5.', condition: (state) => state.playerLevel >= 5},
+      {id: 'all_basic_consonants', name: 'Basic Consonant Champ', icon: '🏆', description: 'Master all basic consonants.', condition: (state) => hangulData.filter(c => c.type === 'Consonant').every(c => state.masteredCharacters.has(c.id))},
+    ];
+
+    // App state
+    let appState = {
+      currentIndex: 0,
+      filteredData: [],
+      currentCategory: 'all',
+      favorites: new Set(),
+      masteredCharacters: new Set(),
+      playerXP: 0,
+      playerLevel: 1,
+      unlockedCategories: new Set(['all', 'consonant']),
+      earnedAchievements: new Set(),
+      quizScore: 0, // Score for current quiz session
+      quizStreak: 0,
+      quizTotalCorrect: 0, // Overall correct answers for accuracy
+      quizTotalAttempted: 0, // Overall attempted for accuracy
+      currentQuizCharacter: null,
+      quizOptions: [],
+      currentMode: 'learn'
+    };
+
+    // DOM elements
+    const learnSection = document.getElementById('learn-section');
+    const quizSection = document.getElementById('quiz-section');
+    const achievementsSectionDisplay = document.getElementById('achievements-section-display');
+    const exampleWordsSection = document.getElementById('example-words-section');
+
+    const learnModeBtn = document.getElementById('learn-mode-btn');
+    const quizModeBtn = document.getElementById('quiz-mode-btn');
+    const achievementsModeBtn = document.getElementById('achievements-mode-btn');
+
+    const hangulCharEl = document.getElementById('hangul-char');
+    const mnemonicTextEl = document.getElementById('mnemonic-text');
+    const soundTextEl = document.getElementById('sound-text');
+    const typeTextEl = document.getElementById('type-text');
+    const notesTextEl = document.getElementById('notes-text');
+    const favoriteBtn = document.getElementById('favorite-btn');
+    const masterBtn = document.getElementById('master-btn');
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    // New/changed progress bar elements
+    const masteryProgressBar = document.getElementById('mastery-progress-bar');
+    const masteryProgressText = document.getElementById('mastery-progress-text');
+
+    const playerLevelEl = document.getElementById('player-level');
+    const playerXPEl = document.getElementById('player-xp');
+    const xpBarHeaderEl = document.getElementById('xp-bar-header'); // Changed ID
+    const categoryFilterContainer = document.querySelector('.category-filter');
+
+    const quizHangulCharEl = document.getElementById('quiz-hangul-char');
+    const quizOptionsContainer = document.getElementById('quiz-options-container');
+    const quizFeedbackEl = document.getElementById('quiz-feedback');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const scoreDisplay = document.getElementById('score-display');
+    const streakDisplay = document.getElementById('streak-display');
+    const accuracyDisplay = document.getElementById('accuracy-display');
+    const achievementsGridContainer = document.getElementById('achievements-grid-container');
+
+    const exampleWordsContainer = document.getElementById('example-words-container');
+    const toastEl = document.getElementById('toast');
+
+    // --- All your previous JavaScript functions (init, setupEventListeners, etc.) ---
+    // MINOR JS ADJUSTMENTS for new DOM element IDs:
+    // - progressBar -> masteryProgressBar
+    // - progressText -> masteryProgressText
+    // - xpBarEl -> xpBarHeaderEl (if you are using the one in the new header)
+    // - playerXPEl might refer to the one in the header now.
+    // --- Ensure these are updated in the JS functions like updatePlayerStatsUI and updateMasteryProgress ---
+
+    function init() {
+      loadState();
+      populateCategoryFilters();
+      setCategory(appState.currentCategory, true); // Pass true for initial load
+      populateExampleWords();
+      updatePlayerStatsUI();
+      updateMasteryProgress();
+      renderAchievements();
+      setupEventListeners();
+      switchMode(appState.currentMode || 'learn', true); // Ensure correct section is shown on load
+    }
+
+    function setupEventListeners() {
+      learnModeBtn.addEventListener('click', () => switchMode('learn'));
+      quizModeBtn.addEventListener('click', () => switchMode('quiz'));
+      achievementsModeBtn.addEventListener('click', () => switchMode('achievements'));
+
+      prevBtn.addEventListener('click', () => navigateCharacter(-1));
+      nextBtn.addEventListener('click', () => navigateCharacter(1));
+      masterBtn.addEventListener('click', masterCurrentCharacter);
+
+      document.addEventListener('keydown', (e) => {
+        if (appState.currentMode === 'learn' && !learnSection.classList.contains('hidden')) {
+          if (e.key === 'ArrowLeft') navigateCharacter(-1);
+          if (e.key === 'ArrowRight') navigateCharacter(1);
+          if (e.key === 'm' || e.key === 'M') masterCurrentCharacter();
+        } else if (appState.currentMode === 'quiz' && !quizSection.classList.contains('hidden')) {
+          if (e.key === ' ' || e.key === 'Enter') {
+            if (!nextQuestionBtn.classList.contains('hidden')) {
+              e.preventDefault();
+              setupQuizQuestion();
+            }
+          }
+        }
+      });
+
+      favoriteBtn.addEventListener('click', toggleFavorite);
+      nextQuestionBtn.addEventListener('click', setupQuizQuestion);
+    }
+
+    function displayCharacter(index) {
+      if (appState.filteredData.length === 0) {
+        hangulCharEl.textContent = '🤔';
+        mnemonicTextEl.textContent = 'No characters in this category or filter.';
+        soundTextEl.textContent = '-';
+        typeTextEl.textContent = '-';
+        notesTextEl.classList.add('hidden');
+        masterBtn.disabled = true;
+        favoriteBtn.disabled = true;
+        return;
+      }
+      masterBtn.disabled = false;
+      favoriteBtn.disabled = false;
+
+      const charData = appState.filteredData[index];
+      if (!charData) { // Safety check
+        console.error("CharData is undefined for index:", index, "FilteredData:", appState.filteredData);
+        // Potentially reset to a valid state or show error
+        setCategory('all'); // Fallback
+        return;
+      }
+
+      hangulCharEl.textContent = charData.hangul;
+      mnemonicTextEl.textContent = charData.mnemonic;
+      soundTextEl.textContent = charData.sound;
+      typeTextEl.textContent = charData.type;
+
+      if (charData.notes) {
+        notesTextEl.textContent = charData.notes;
+        notesTextEl.classList.remove('hidden');
+      } else {
+        notesTextEl.classList.add('hidden');
+      }
+
+      const isFavorite = appState.favorites.has(charData.id);
+      favoriteBtn.textContent = isFavorite ? '♥' : '♡'; // Using text hearts
+      favoriteBtn.classList.toggle('active', isFavorite);
+
+      const isMastered = appState.masteredCharacters.has(charData.id);
+      hangulCharEl.classList.toggle('mastered', isMastered);
+      masterBtn.textContent = isMastered ? '✔️ Mastered!' : '✨ Master This!';
+      masterBtn.classList.toggle('mastered-btn', isMastered);
+      masterBtn.disabled = isMastered;
+
+      updateNavigationButtons();
+    }
+
+    function navigateCharacter(direction) {
+      if (appState.filteredData.length === 0) return;
+      appState.currentIndex += direction;
+      if (appState.currentIndex < 0) appState.currentIndex = appState.filteredData.length - 1;
+      if (appState.currentIndex >= appState.filteredData.length) appState.currentIndex = 0;
+      displayCharacter(appState.currentIndex);
+    }
+
+    function updateNavigationButtons() {
+      prevBtn.disabled = appState.filteredData.length <= 1;
+      nextBtn.disabled = appState.filteredData.length <= 1;
+    }
+
+    function populateCategoryFilters() {
+      categoryFilterContainer.innerHTML = '';
+      const allCategories = ['all', 'consonant', 'vowel', 'y-vowel', 'diphthong', 'tense consonant'];
+
+      allCategories.forEach(catKey => {
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+        btn.dataset.category = catKey;
+        // Simple title case, replace hyphens
+        let displayName = catKey.replace('-', ' ');
+        displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+        btn.textContent = displayName;
+
+
+        if (appState.unlockedCategories.has(catKey)) {
+          btn.addEventListener('click', (e) => {
+            setCategory(e.target.dataset.category);
+          });
+        } else {
+          btn.classList.add('locked');
+          btn.disabled = true;
+        }
+        categoryFilterContainer.appendChild(btn);
+      });
+    }
+
+    function setCategory(category, isInitialLoad = false) {
+      if (!isInitialLoad && !appState.unlockedCategories.has(category)) {
+        showToast(`Category "${category}" is locked. Keep learning to unlock!`);
+        return;
+      }
+      appState.currentCategory = category;
+
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category && !btn.classList.contains('locked'));
+      });
+
+      if (category === 'all') {
+        appState.filteredData = hangulData.filter(char => appState.unlockedCategories.has(char.type.toLowerCase().replace(' ', '-')));
+      } else {
+        appState.filteredData = hangulData.filter(char =>
+          char.type.toLowerCase().replace(' ', '-') === category.replace(' ', '-')
+        );
+      }
+      if (appState.filteredData.length === 0 && category !== 'all' && appState.unlockedCategories.has('all')) {
+        appState.filteredData = hangulData.filter(char => appState.unlockedCategories.has(char.type.toLowerCase().replace(' ', '-')));
+      }
+
+      appState.currentIndex = 0;
+      displayCharacter(appState.currentIndex);
+      if (!isInitialLoad) saveState();
+    }
+
+    function toggleFavorite() {
+      if (appState.filteredData.length === 0 || !appState.filteredData[appState.currentIndex]) return;
+      const currentChar = appState.filteredData[appState.currentIndex];
+      if (appState.favorites.has(currentChar.id)) {
+        appState.favorites.delete(currentChar.id);
+      } else {
+        appState.favorites.add(currentChar.id);
+        favoriteBtn.classList.add('bounce'); // Animation defined in previous CSS
+        setTimeout(() => favoriteBtn.classList.remove('bounce'), 600);
+      }
+      displayCharacter(appState.currentIndex);
+      saveState();
+    }
+
+    function masterCurrentCharacter() {
+      if (appState.filteredData.length === 0 || !appState.filteredData[appState.currentIndex]) return;
+      const currentChar = appState.filteredData[appState.currentIndex];
+      if (!currentChar || appState.masteredCharacters.has(currentChar.id)) return;
+
+      appState.masteredCharacters.add(currentChar.id);
+      addXP(currentChar.xp || 10);
+      hangulCharEl.classList.add('bounce');
+
+      setTimeout(() => {
+        hangulCharEl.classList.remove('bounce');
+        displayCharacter(appState.currentIndex);
+      }, 600);
+      updateMasteryProgress();
+      checkAchievements();
+      saveState();
+    }
+
+    function updateMasteryProgress() {
+      const totalChars = hangulData.length;
+      const masteredCount = appState.masteredCharacters.size;
+      const percentage = totalChars > 0 ? (masteredCount / totalChars) * 100 : 0;
+
+      masteryProgressBar.style.width = `${percentage}%`; // Use new ID
+      masteryProgressText.textContent = `${masteredCount} / ${totalChars} characters mastered`; // Use new ID
+    }
+
+    function addXP(amount) {
+      appState.playerXP += amount;
+      showToast(`+${amount} XP!`, 'xp');
+
+      let xpForNextLevel = XP_PER_LEVEL[appState.playerLevel - 1] || Infinity;
+      while (appState.playerXP >= xpForNextLevel && xpForNextLevel !== Infinity) {
+        appState.playerXP -= xpForNextLevel;
+        appState.playerLevel++;
+        showToast(`🎉 Level Up! Reached Level ${appState.playerLevel}!`, 'achievement');
+        unlockNewContentForLevel(appState.playerLevel);
+        xpForNextLevel = XP_PER_LEVEL[appState.playerLevel - 1] || Infinity;
+      }
+      updatePlayerStatsUI();
+      checkAchievements();
+      saveState();
+    }
+
+    function updatePlayerStatsUI() {
+      playerLevelEl.textContent = appState.playerLevel;
+      const xpNeeded = XP_PER_LEVEL[appState.playerLevel - 1] || Infinity;
+      playerXPEl.textContent = `${appState.playerXP} / ${xpNeeded === Infinity ? 'MAX' : xpNeeded}`;
+      xpBarHeaderEl.style.width = xpNeeded === Infinity ? '100%' : `${(appState.playerXP / xpNeeded) * 100}%`; // Use new ID
+    }
+
+    function unlockNewContentForLevel(level) {
+      const categoriesToUnlock = CATEGORY_UNLOCKS[level];
+      if (categoriesToUnlock) {
+        let newUnlocks = false;
+        categoriesToUnlock.forEach(catKey => {
+          if (!appState.unlockedCategories.has(catKey)) {
+            appState.unlockedCategories.add(catKey);
+            newUnlocks = true;
+            let displayName = catKey.replace('-', ' ');
+            displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+            showToast(`New category unlocked: ${displayName}!`, 'achievement');
+          }
+        });
+        if (newUnlocks) {
+          populateCategoryFilters();
+          const currentActiveCatBtn = categoryFilterContainer.querySelector(`.category-btn[data-category="${appState.currentCategory}"]`);
+          if (currentActiveCatBtn) currentActiveCatBtn.classList.add('active');
+        }
+      }
+    }
+
+    function switchMode(mode, isInitialLoad = false) {
+      appState.currentMode = mode;
+
+      learnSection.classList.add('hidden');
+      quizSection.classList.add('hidden');
+      achievementsSectionDisplay.classList.add('hidden');
+      exampleWordsSection.classList.add('hidden'); // Hide examples by default
+
+      learnModeBtn.classList.remove('active');
+      quizModeBtn.classList.remove('active');
+      achievementsModeBtn.classList.remove('active');
+
+      if (mode === 'learn') {
+        learnSection.classList.remove('hidden');
+        exampleWordsSection.classList.remove('hidden'); // Show examples in learn mode
+        learnModeBtn.classList.add('active');
+        if (!isInitialLoad) displayCharacter(appState.currentIndex); // Avoid double display on init
+      } else if (mode === 'quiz') {
+        quizSection.classList.remove('hidden');
+        quizModeBtn.classList.add('active');
+        if (appState.masteredCharacters.size < 4 && hangulData.length >= 4) {
+          quizFeedbackEl.textContent = "Master at least 4 characters to start the quiz!";
+          quizFeedbackEl.className = 'quiz-feedback';
+          quizHangulCharEl.textContent = '🤔';
+          quizOptionsContainer.innerHTML = '';
+          return;
+        } else if (hangulData.length < 4) {
+          quizFeedbackEl.textContent = "Not enough characters data for a quiz.";
+          quizFeedbackEl.className = 'quiz-feedback';
+          quizHangulCharEl.textContent = '🤔';
+          quizOptionsContainer.innerHTML = '';
+          return;
+        }
+        startQuiz();
+      } else if (mode === 'achievements') {
+        achievementsSectionDisplay.classList.remove('hidden');
+        achievementsModeBtn.classList.add('active');
+        renderAchievements();
+      }
+      if (!isInitialLoad) saveState();
+    }
+
+    function startQuiz() {
+      appState.quizScore = 0; // Reset session score
+      appState.quizStreak = 0; // Reset session streak
+      updateQuizStats();
+      setupQuizQuestion();
+    }
+
+    function setupQuizQuestion() {
+      const availableCharsForQuiz = hangulData.filter(c => appState.masteredCharacters.has(c.id));
+
+      if (availableCharsForQuiz.length < 1 && hangulData.length > 0) { // Needs at least 1 mastered character OR any char if none mastered but data exists
+        appState.currentQuizCharacter = hangulData[Math.floor(Math.random() * hangulData.length)];
+        if (availableCharsForQuiz.length < 1) {
+          showToast("Try mastering some characters first for a better quiz experience!", "info");
+        }
+      } else if (availableCharsForQuiz.length > 0) {
+        appState.currentQuizCharacter = availableCharsForQuiz[Math.floor(Math.random() * availableCharsForQuiz.length)];
+      } else { // No data at all
+        quizFeedbackEl.textContent = "No character data available for quiz.";
+        quizHangulCharEl.textContent = '🤔';
+        quizOptionsContainer.innerHTML = '';
+        nextQuestionBtn.classList.add('hidden');
+        return;
+      }
+
+      quizFeedbackEl.textContent = '';
+      quizFeedbackEl.className = 'quiz-feedback';
+      nextQuestionBtn.classList.add('hidden');
+      quizHangulCharEl.textContent = appState.currentQuizCharacter.hangul;
+      appState.quizOptions = [appState.currentQuizCharacter];
+      let uniqueSoundKeys = new Set([appState.currentQuizCharacter.soundKey]);
+      const shuffledHangulData = [...hangulData].sort(() => 0.5 - Math.random());
+
+      while (appState.quizOptions.length < 4 && appState.quizOptions.length < hangulData.length) {
+        const randomChar = shuffledHangulData.pop();
+        if (randomChar && !uniqueSoundKeys.has(randomChar.soundKey)) {
+          appState.quizOptions.push(randomChar);
+          uniqueSoundKeys.add(randomChar.soundKey);
+        }
+        if (shuffledHangulData.length === 0 && appState.quizOptions.length < 4) break;
+      }
+      while (appState.quizOptions.length < 4 && hangulData.length > 0 && appState.quizOptions.length < hangulData.length) { // fill if not enough unique
+        let fillerChar = hangulData[Math.floor(Math.random() * hangulData.length)];
+        // Try to avoid direct duplicate objects if possible, not strictly necessary for just 4 options
+        if (!appState.quizOptions.find(opt => opt.id === fillerChar.id)) {
+          appState.quizOptions.push(fillerChar);
+        } else if (appState.quizOptions.length < hangulData.length) { // if we have more data items than options, try harder
+          continue;
+        } else { // last resort, push any
+          appState.quizOptions.push(fillerChar);
+        }
+      }
+      // Ensure exactly 4 options if possible, even if it means duplicates (less ideal)
+      while (appState.quizOptions.length < Math.min(4, hangulData.length) && hangulData.length > 0) {
+        appState.quizOptions.push(hangulData[Math.floor(Math.random() * hangulData.length)]);
+      }
+
+
+      for (let i = appState.quizOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [appState.quizOptions[i], appState.quizOptions[j]] = [appState.quizOptions[j], appState.quizOptions[i]];
+      }
+
+      quizOptionsContainer.innerHTML = '';
+      appState.quizOptions.forEach(option => {
+        const button = document.createElement('button');
+        button.className = 'quiz-option';
+        button.textContent = option.sound;
+        button.dataset.soundKey = option.soundKey;
+        button.addEventListener('click', handleQuizAnswer);
+        quizOptionsContainer.appendChild(button);
+      });
+    }
+
+    function handleQuizAnswer(event) {
+      const selectedSoundKey = event.target.dataset.soundKey;
+      const isCorrect = selectedSoundKey === appState.currentQuizCharacter.soundKey;
+
+      appState.quizTotalAttempted++;
+
+      document.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.classList.add('disabled');
+        btn.style.pointerEvents = 'none';
+        if (btn.dataset.soundKey === appState.currentQuizCharacter.soundKey) {
+          btn.classList.add('correct');
+        } else if (btn === event.target && !isCorrect) {
+          btn.classList.add('incorrect');
+        }
+      });
+
+      if (isCorrect) {
+        appState.quizScore++;
+        appState.quizStreak++;
+        appState.quizTotalCorrect++;
+        quizFeedbackEl.textContent = `🎉 Correct! +${5 + appState.quizStreak} XP`;
+        quizFeedbackEl.className = 'quiz-feedback correct bounce';
+        addXP(5 + appState.quizStreak);
+
+        if (!appState.masteredCharacters.has(appState.currentQuizCharacter.id)) {
+          masterCharacterById(appState.currentQuizCharacter.id, Math.floor((appState.currentQuizCharacter.xp || 10) / 2));
+        }
+      } else {
+        appState.quizStreak = 0;
+        quizFeedbackEl.textContent = `❌ Incorrect. ${appState.currentQuizCharacter.hangul} is "${appState.currentQuizCharacter.sound}"`;
+        quizFeedbackEl.className = 'quiz-feedback incorrect';
+      }
+
+      updateQuizStats();
+      checkAchievements();
+      nextQuestionBtn.classList.remove('hidden');
+      saveState();
+    }
+
+    function masterCharacterById(charId, xpAmount) { // Renamed from masterCurrentCharacterById
+      if (!charId || appState.masteredCharacters.has(charId)) return;
+      const charData = hangulData.find(c => c.id === charId);
+      if (!charData) return;
+
+      appState.masteredCharacters.add(charData.id);
+      addXP(xpAmount);
+      updateMasteryProgress();
+      checkAchievements();
+      if (appState.currentMode === 'learn' && appState.filteredData[appState.currentIndex]?.id === charId) {
+        displayCharacter(appState.currentIndex);
+      }
+      saveState();
+    }
+
+    function updateQuizStats() {
+      scoreDisplay.textContent = appState.quizScore;
+      streakDisplay.textContent = appState.quizStreak;
+      const accuracy = appState.quizTotalAttempted > 0 ? Math.round((appState.quizTotalCorrect / appState.quizTotalAttempted) * 100) : 0;
+      accuracyDisplay.textContent = `${accuracy}%`;
+    }
+
+    function populateExampleWords() {
+      exampleWordsContainer.innerHTML = '';
+      exampleWords.forEach(word => {
+        const card = document.createElement('div');
+        card.className = 'example-card';
+        card.innerHTML = `
+              <div class="example-hangul">${word.hangul}</div>
+              <div class="example-romanization">${word.romanization}</div>
+              <div class="example-english">${word.english}</div>
+              <div class="example-breakdown">${word.breakdown}</div>
+            `;
+        exampleWordsContainer.appendChild(card);
+      });
+    }
+
+    function showToast(message, type = 'info') {
+      toastEl.textContent = message;
+      toastEl.className = 'toast-notification'; // Reset classes
+      if (type === 'achievement') toastEl.classList.add('achievement');
+      else if (type === 'xp') toastEl.classList.add('xp');
+
+      toastEl.classList.add('show');
+      setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 3000);
+    }
+
+    function checkAchievements() {
+      let newAchievementEarned = false;
+      ACHIEVEMENTS.forEach(ach => {
+        if (!appState.earnedAchievements.has(ach.id) && ach.condition(appState)) {
+          appState.earnedAchievements.add(ach.id);
+          showToast(`🏆 Achievement Unlocked: ${ach.name}!`, 'achievement');
+          addXP(50); // Bonus XP
+          newAchievementEarned = true;
+        }
+      });
+      if (newAchievementEarned && appState.currentMode === 'achievements') {
+        renderAchievements();
+      }
+      // No saveState() here, it's called by addXP or other parent functions
+    }
+
+    function renderAchievements() {
+      achievementsGridContainer.innerHTML = '';
+      ACHIEVEMENTS.forEach(ach => {
+        const item = document.createElement('div');
+        item.className = 'achievement-item';
+        const earned = appState.earnedAchievements.has(ach.id);
+        if (earned) item.classList.add('earned');
+
+        item.innerHTML = `
+                <div class="icon">${ach.icon}</div>
+                <strong>${ach.name}</strong>
+                <div>${ach.description}</div>
+                <div class="unlocked-status">${earned ? 'UNLOCKED' : 'LOCKED'}</div>
+            `;
+        achievementsGridContainer.appendChild(item);
+      });
+    }
+
+    function saveState() {
+      const stateToSave = {
+        currentIndex: appState.currentIndex,
+        currentCategory: appState.currentCategory,
+        favorites: Array.from(appState.favorites),
+        masteredCharacters: Array.from(appState.masteredCharacters),
+        playerXP: appState.playerXP,
+        playerLevel: appState.playerLevel,
+        unlockedCategories: Array.from(appState.unlockedCategories),
+        earnedAchievements: Array.from(appState.earnedAchievements),
+        quizTotalCorrect: appState.quizTotalCorrect,
+        quizTotalAttempted: appState.quizTotalAttempted,
+        currentMode: appState.currentMode // Save current mode
+      };
+      localStorage.setItem('hangulQuestState', JSON.stringify(stateToSave));
+    }
+
+    function loadState() {
+      const savedStateString = localStorage.getItem('hangulQuestState');
+      if (savedStateString) {
+        const savedState = JSON.parse(savedStateString);
+        appState.currentIndex = savedState.currentIndex || 0;
+        appState.currentCategory = savedState.currentCategory || 'all';
+        appState.favorites = new Set(savedState.favorites || []);
+        appState.masteredCharacters = new Set(savedState.masteredCharacters || []);
+        appState.playerXP = savedState.playerXP || 0;
+        appState.playerLevel = savedState.playerLevel || 1;
+        let defaultUnlocks = CATEGORY_UNLOCKS[1] || ['all', 'consonant'];
+        appState.unlockedCategories = new Set([...defaultUnlocks, ...(savedState.unlockedCategories || [])]);
+        appState.earnedAchievements = new Set(savedState.earnedAchievements || []);
+        appState.quizTotalCorrect = savedState.quizTotalCorrect || 0;
+        appState.quizTotalAttempted = savedState.quizTotalAttempted || 0;
+        appState.currentMode = savedState.currentMode || 'learn'; // Load current mode
+
+        for (let i = 1; i <= appState.playerLevel; i++) { // Ensure unlocks are consistent with level
+          unlockNewContentForLevel(i);
+        }
+      } else {
+        unlockNewContentForLevel(1); // First time load: unlock initial categories
+      }
+    }
+
+    init();
+  </script>
 </body>
 
 </html>
